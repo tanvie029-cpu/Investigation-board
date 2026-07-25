@@ -3,6 +3,7 @@ import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import Dashboard from "./components/dashboard/Dashboard";
 import CaseBoard from "./components/case-board/CaseBoard";
+import EvidenceBoard from './components/evidence-board/EvidenceBoard';
 import type { View } from './types';
 
 const viewTitles: Record<View, string> = {
@@ -45,7 +46,7 @@ export default function App() {
 
           {activeView === 'cases' && <CaseBoard />}
 
-          {activeView === "board" && <div>Evidence Board</div>}
+          {activeView === 'board' && <EvidenceBoard />}
 
           {activeView === "timeline" && <div>Timeline</div>}
         </main>

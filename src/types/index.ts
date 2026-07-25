@@ -1,9 +1,7 @@
 export type CaseStatus = 'open' | 'in_progress' | 'review' | 'closed';
 export type Priority = 'low' | 'medium' | 'high';
 export type View = "dashboard" | "cases" | "board" | "timeline";
-export interface Case {
-  updatedAt: string; // add this field to the existing Case interface
-}
+export type EvidenceType = 'document' | 'photo' | 'note' | 'location';
 
 export interface Case {
   id: string;
@@ -13,6 +11,7 @@ export interface Case {
   createdAt: string;
   evidenceCount: number;
   assignee: string;
+  updatedAt: string;
 }
 
 export interface ActivityItem {
@@ -27,4 +26,23 @@ export interface TrendPoint {
   day: string;
   evidence: number;
   cases: number;
+}
+
+export interface Evidence {
+  id: string;
+  type: EvidenceType;
+  title: string;
+  description: string;
+  tags: string[];
+  addedBy: string;
+  addedAt: string;
+  x: number;
+  y: number;
+}
+
+export interface Relationship {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  label: string;
 }
