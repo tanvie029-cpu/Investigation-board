@@ -3,6 +3,7 @@ export type Priority = 'low' | 'medium' | 'high';
 export type View = "dashboard" | "cases" | "board" | "timeline";
 export type EvidenceType = 'document' | 'photo' | 'note' | 'location' | 'person';
 export type TimelineEventType = 'discovery' | 'evidence_added' | 'status_changed' | 'interview' | 'alert';
+export type NotificationType = 'alert' | 'evidence' | 'status' | 'interview';
 
 export interface Case {
   id: string;
@@ -57,4 +58,13 @@ export interface TimelineEvent {
   type: TimelineEventType;
   date: string;
   time: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  type: NotificationType;
+  title: string;
+  description: string;
+  timestamp: string;
+  read: boolean;
 }

@@ -5,7 +5,14 @@ import type {
   Evidence,
   Relationship,
   TimelineEvent,
+  NotificationItem,
 } from '../types';
+
+export const currentUser = {
+  name: 'Aarav Sharma',
+  role: 'Senior Investigator',
+  email: 'aarav.sharma@casefile.in',
+};
 
 export const mockCases: Case[] = [
   { id: 'c1', title: 'Financial Fraud — BKC', status: 'in_progress', priority: 'high', createdAt: '2026-07-18', updatedAt: '2026-07-24', evidenceCount: 14, assignee: 'Aarav Sharma' },
@@ -60,4 +67,12 @@ export const mockTimelineEvents: TimelineEvent[] = [
   { id: 't6', caseTitle: 'Corporate Data Leak — Andheri', title: 'Case Moved to Review', investigator: 'Sneha Kulkarni', description: 'Sufficient evidence gathered; case escalated to review pending supervisor sign-off.', type: 'status_changed', date: '2026-07-22', time: '10:00' },
   { id: 't7', caseTitle: 'Missing Person — Navi Mumbai', title: 'Case Closed', investigator: 'Rahul Patil', description: 'Investigation concluded; individual located safe in Thane, family notified.', type: 'status_changed', date: '2026-07-10', time: '17:45' },
   { id: 't8', caseTitle: 'Counterfeit Medicine Network — Thane', title: 'Raid Conducted — Thane Warehouse', investigator: 'Arjun Deshmukh', description: 'Joint raid with local authorities recovers suspected counterfeit stock from a Thane warehouse.', type: 'evidence_added', date: '2026-07-23', time: '06:15' },
+];
+
+export const mockNotifications: NotificationItem[] = [
+  { id: 'n1', type: 'alert', title: 'Anomaly Detected', description: 'Access log gap flagged in Corporate Data Leak — Andheri.', timestamp: '5 min ago', read: false },
+  { id: 'n2', type: 'evidence', title: 'New Evidence Added', description: 'Aarav Sharma uploaded bank transfer records to Financial Fraud — BKC.', timestamp: '32 min ago', read: false },
+  { id: 'n3', type: 'interview', title: 'Interview Scheduled', description: 'Sneha Kulkarni scheduled a follow-up interview for Cyber Crime — Powai.', timestamp: '1 hr ago', read: false },
+  { id: 'n4', type: 'status', title: 'Case Status Updated', description: 'Missing Person — Navi Mumbai marked as Closed by Rahul Patil.', timestamp: '3 hr ago', read: true },
+  { id: 'n5', type: 'alert', title: 'High Priority Case', description: 'Counterfeit Medicine Network — Thane escalated to high priority.', timestamp: '6 hr ago', read: true },
 ];
