@@ -50,7 +50,7 @@ export default function Sidebar({ activeView, onChangeView, isOpen }: SidebarPro
       </nav>
 
       <div className="px-5 py-4 border-t border-white/10 text-[11px] text-slate-500 font-mono">
-        v1.0.0 — SECURE SESSION
+        Powered by Frontend Wars 2026
       </div>
     </aside>
   );
