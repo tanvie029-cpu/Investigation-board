@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import Dashboard from "./components/dashboard/Dashboard";
+import CaseBoard from "./components/case-board/CaseBoard";
 import type { View } from './types';
 
 const viewTitles: Record<View, string> = {
@@ -42,7 +43,7 @@ export default function App() {
         <main className="flex-1 p-4 lg:p-6 text-slate-300">
           {activeView === "dashboard" && <Dashboard />}
 
-          {activeView === "cases" && <div>Cases</div>}
+          {activeView === 'cases' && <CaseBoard />}
 
           {activeView === "board" && <div>Evidence Board</div>}
 
