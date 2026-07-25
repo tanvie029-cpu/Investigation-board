@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
+import Dashboard from "./components/dashboard/Dashboard";
 import type { View } from './types';
 
 const viewTitles: Record<View, string> = {
@@ -39,7 +40,13 @@ export default function App() {
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         />
         <main className="flex-1 p-4 lg:p-6 text-slate-300">
-          {/* Section content will be injected here in later steps */}
+          {activeView === "dashboard" && <Dashboard />}
+
+          {activeView === "cases" && <div>Cases</div>}
+
+          {activeView === "board" && <div>Evidence Board</div>}
+
+          {activeView === "timeline" && <div>Timeline</div>}
         </main>
       </div>
     </div>
