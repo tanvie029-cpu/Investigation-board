@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
-import { Plus, Filter, ZoomIn, ZoomOut, X } from 'lucide-react';
+import { Plus, Filter, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { mockEvidence, mockRelationships } from '../../data/mockData';
 import type { Evidence } from '../../types';
 import EvidenceCard from './EvidenceCard';
 import ConnectionLine from './ConnectionLine';
+import EvidenceDrawer from "./EvidenceDrawer";
 
 const CARD_WIDTH = 192;
 const CARD_HEIGHT = 76;
+const DEFAULT_ZOOM = 1;
 
 export default function EvidenceBoard() {
   const [evidence, setEvidence] = useState<Evidence[]>(mockEvidence);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [selected, setSelected] = useState<Evidence | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
@@ -30,6 +32,11 @@ export default function EvidenceBoard() {
 
   function center(ev: Evidence) {
     return { x: ev.x + CARD_WIDTH / 2, y: ev.y + CARD_HEIGHT / 2 };
+  }
+
+  function resetView() {
+    setZoom(DEFAULT_ZOOM);
+    setEvidence(mockEvidence);
   }
 
   return (
@@ -58,11 +65,20 @@ export default function EvidenceBoard() {
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
+          <button
+            onClick={resetView}
+            className="p-1.5 rounded-lg text-slate-400 border border-white/10 hover:bg-white/5 transition-colors ml-1"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
       {/* Canvas */}
-      <div className="relative bg-[#0E1319] border border-white/10 rounded-xl overflow-auto" style={{ height: '65vh' }}>
+      <div
+        className="relative bg-[#0E1319] border border-white/10 rounded-xl overflow-auto"
+        style={{ height: '65vh' }}
+      >
         <div
           className="relative"
           style={{
@@ -70,6 +86,9 @@ export default function EvidenceBoard() {
             height: 700,
             transform: `scale(${zoom})`,
             transformOrigin: 'top left',
+            backgroundImage:
+              'linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
           }}
         >
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
@@ -91,35 +110,14 @@ export default function EvidenceBoard() {
         </div>
       </div>
 
-      {/* Detail Drawer */}
       {selected && (
-        <>
-          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setSelected(null)} />
-          <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-[#0B0F14] border-l border-white/10 z-50 p-5 overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-mono uppercase tracking-wide text-slate-500">{selected.type}</span>
-              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-white transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <h3 className="text-base font-semibold text-white mb-2">{selected.title}</h3>
-            <p className="text-sm text-slate-400 leading-relaxed mb-4">{selected.description}</p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {selected.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] font-mono px-2 py-1 rounded border text-cyan-400 bg-cyan-400/10 border-cyan-400/20"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="text-[11px] text-slate-500 font-mono border-t border-white/10 pt-3 space-y-1">
-              <div>Added by {selected.addedBy}</div>
-              <div>{selected.addedAt}</div>
-            </div>
-          </div>
-        </>
+        <EvidenceDrawer
+          evidence={selected}
+          allEvidence={evidence}
+          relationships={mockRelationships}
+          onClose={() => setSelected(null)}
+          onSelect={setSelected}
+        />
       )}
     </div>
   );

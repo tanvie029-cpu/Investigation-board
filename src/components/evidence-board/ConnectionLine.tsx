@@ -17,9 +17,9 @@ export default function ConnectionLine({ x1, y1, x2, y2, label }: ConnectionLine
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke="#f59e0b"
+        stroke="#fbbf24"
         strokeWidth={1.5}
-        strokeOpacity={0.4}
+        strokeOpacity={0.45}
         strokeDasharray="4 3"
       />
       <rect

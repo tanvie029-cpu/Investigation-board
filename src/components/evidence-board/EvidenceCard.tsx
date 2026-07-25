@@ -1,6 +1,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { FileText, Image, StickyNote, MapPin } from 'lucide-react';
+import { FileText, Image, StickyNote, MapPin, UserRound } from 'lucide-react';
 import type { Evidence, EvidenceType } from '../../types';
 
 const typeConfig: Record<EvidenceType, { icon: typeof FileText; accent: string }> = {
@@ -8,6 +8,7 @@ const typeConfig: Record<EvidenceType, { icon: typeof FileText; accent: string }
   photo: { icon: Image, accent: 'text-violet-400 bg-violet-400/10 border-violet-400/20' },
   note: { icon: StickyNote, accent: 'text-amber-400 bg-amber-400/10 border-amber-400/20' },
   location: { icon: MapPin, accent: 'text-red-400 bg-red-400/10 border-red-400/20' },
+  person: { icon: UserRound, accent: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' },
 };
 
 interface EvidenceCardProps {
