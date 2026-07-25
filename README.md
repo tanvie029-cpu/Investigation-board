@@ -1,75 +1,68 @@
-# React + TypeScript + Vite
+# 🕵️ Intelligence Investigation Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern frontend web application built for **Frontend Wars 2026** that helps investigators manage cases, organize evidence, and track investigation progress through an intuitive SaaS-style interface.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 📊 Dashboard with investigation statistics and activity overview
+- 📁 Kanban-based Case Management
+- 🔍 Global Search with direct section navigation
+- 🔔 Notification Center with unread badge
+- 👤 Profile Menu with Settings & Help
+- 🧩 Interactive Evidence Board with Drag & Drop and Zoom
+- 📅 Investigation Timeline
+- 📱 Responsive and modern user interface
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Recharts
+- dnd-kit
+- Lucide React
 
-## Expanding the ESLint configuration
+## 📂 Folder Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+src/
+├── components/
+├── data/
+├── types/
+├── App.tsx
+└── main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone <repository-url>
+cd investigation-board
+npm install
+npm run dev
 ```
+
+> Replace `<repository-url>` with your GitHub repository URL.
+
+## 🎯 Project Objective
+
+The goal of this project is to provide investigators with a centralized platform to:
+
+- Monitor ongoing investigations
+- Organize and prioritize cases
+- Visualize evidence relationships
+- Track investigation activities
+- Quickly navigate important information
+
+## 🔮 Future Enhancements
+
+- Backend integration
+- User authentication
+- Real-time collaboration
+- Database connectivity
+- Advanced analytics and reporting
+
+## 🏆 Built For
+
+**Frontend Wars 2026 Hackathon**

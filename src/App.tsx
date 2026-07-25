@@ -1,8 +1,9 @@
+// src/App.tsx
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
-import Dashboard from "./components/dashboard/Dashboard";
-import CaseBoard from "./components/case-board/CaseBoard";
+import Dashboard from './components/dashboard/Dashboard';
+import CaseBoard from './components/case-board/CaseBoard';
 import EvidenceBoard from './components/evidence-board/EvidenceBoard';
 import TimelineView from './components/timeline/TimelineView';
 import type { View } from './types';
@@ -29,7 +30,6 @@ export default function App() {
         isOpen={sidebarOpen}
       />
 
-      {/* mobile overlay */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
@@ -41,14 +41,12 @@ export default function App() {
         <Topbar
           title={viewTitles[activeView]}
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
+          onNavigate={setActiveView}
         />
         <main className="flex-1 p-4 lg:p-6 text-slate-300">
-          {activeView === "dashboard" && <Dashboard />}
-
+          {activeView === 'dashboard' && <Dashboard />}
           {activeView === 'cases' && <CaseBoard />}
-
           {activeView === 'board' && <EvidenceBoard />}
-
           {activeView === 'timeline' && <TimelineView />}
         </main>
       </div>

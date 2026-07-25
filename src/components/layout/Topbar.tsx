@@ -21,12 +21,14 @@ import {
   LogOut,
   X,
 } from 'lucide-react';
-import { mockCases, mockEvidence, mockTimelineEvents, mockNotifications, currentUser } from '../../data/mockData';
-import type { NotificationType } from '../../types';
+import { mockCases, mockEvidence, mockTimelineEvents, mockNotifications as initialNotifications, currentUser } from '../../data/mockData';
+import type { NotificationType, View } from '../../types';
+import InfoModal from '../shared/InfoModal';
 
 interface TopbarProps {
   onToggleSidebar: () => void;
   title: string;
+  onNavigate: (view: View) => void;
 }
 
 const notificationConfig: Record<NotificationType, { icon: typeof Bell; accent: string }> = {
@@ -44,16 +46,19 @@ const evidenceTypeIcon = {
   person: UserRound,
 };
 
-export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
+export default function Topbar({ onToggleSidebar, title, onNavigate }: TopbarProps) {
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [infoModal, setInfoModal] = useState<'settings' | 'help' | null>(null);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
+  // close on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false);
@@ -62,6 +67,19 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // ESC closes any open dropdown
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setNotifOpen(false);
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const results = useMemo(() => {
@@ -76,7 +94,22 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
   }, [query]);
 
   const hasResults = results.cases.length + results.evidence.length + results.events.length > 0;
-  const unreadCount = mockNotifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  function handleResultClick(view: View) {
+    onNavigate(view);
+    setSearchOpen(false);
+    setQuery('');
+  }
+
+  function handleNotifToggle() {
+    const opening = !notifOpen;
+    setNotifOpen(opening);
+    if (opening && unreadCount > 0) {
+      // mark all as read when panel opens
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    }
+  }
 
   return (
     <header className="h-16 bg-[#0B0F14]/80 backdrop-blur border-b border-white/10 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
@@ -104,6 +137,7 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
                 setSearchOpen(true);
               }}
               onFocus={() => setSearchOpen(true)}
+              onKeyDown={(e) => e.key === 'Escape' && (e.currentTarget as HTMLInputElement).blur()}
               placeholder="Search evidence, cases..."
               className="bg-transparent text-sm text-slate-300 placeholder:text-slate-500 outline-none w-full"
             />
@@ -115,7 +149,7 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
           </div>
 
           {searchOpen && query && (
-            <div className="absolute right-0 mt-2 w-96 max-h-[28rem] overflow-y-auto bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-3 z-50">
+            <div className="absolute right-0 mt-2 w-96 max-h-[28rem] overflow-y-auto bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 p-3 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
               {!hasResults && (
                 <p className="text-[11px] text-slate-600 font-mono text-center py-6">No results for "{query}"</p>
               )}
@@ -125,10 +159,14 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
                   <span className="text-[10px] font-mono uppercase tracking-wide text-slate-500 px-1">Cases</span>
                   <div className="mt-1 space-y-1">
                     {results.cases.map((c) => (
-                      <div key={c.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
+                      <button
+                        key={c.id}
+                        onClick={() => handleResultClick('cases')}
+                        className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                      >
                         <Briefcase className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                         <span className="text-sm text-slate-300 truncate">{c.title}</span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -141,10 +179,14 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
                     {results.evidence.map((e) => {
                       const Icon = evidenceTypeIcon[e.type];
                       return (
-                        <div key={e.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
+                        <button
+                          key={e.id}
+                          onClick={() => handleResultClick('board')}
+                          className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                        >
                           <Icon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                           <span className="text-sm text-slate-300 truncate">{e.title}</span>
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
@@ -156,10 +198,14 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
                   <span className="text-[10px] font-mono uppercase tracking-wide text-slate-500 px-1">Timeline</span>
                   <div className="mt-1 space-y-1">
                     {results.events.map((t) => (
-                      <div key={t.id} className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer">
+                      <button
+                        key={t.id}
+                        onClick={() => handleResultClick('timeline')}
+                        className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                      >
                         <RefreshCw className="w-3.5 h-3.5 text-violet-400 shrink-0" />
                         <span className="text-sm text-slate-300 truncate">{t.title}</span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -171,30 +217,31 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
-            onClick={() => setNotifOpen((prev) => !prev)}
+            onClick={handleNotifToggle}
             className="text-slate-400 hover:text-white transition-colors relative"
+            aria-label="Notifications"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full" />
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-amber-400 text-[9px] font-bold text-[#0B0F14]">
+                {unreadCount}
+              </span>
             )}
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-80 max-h-[26rem] overflow-y-auto bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50">
+            <div className="absolute right-0 mt-2 w-80 max-h-[26rem] overflow-y-auto bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
                 <span className="text-sm font-semibold text-white">Notifications</span>
-                <span className="text-[11px] font-mono text-slate-500">{unreadCount} unread</span>
+                <span className="text-[11px] font-mono text-slate-500">All read</span>
               </div>
               <div className="p-2">
-                {mockNotifications.map((n) => {
+                {notifications.map((n) => {
                   const { icon: Icon, accent } = notificationConfig[n.type];
                   return (
                     <div
                       key={n.id}
-                      className={`flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer ${
-                        !n.read ? 'bg-white/[0.02]' : ''
-                      }`}
+                      className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
                     >
                       <div className={`w-7 h-7 rounded-md border flex items-center justify-center shrink-0 ${accent}`}>
                         <Icon className="w-3.5 h-3.5" />
@@ -204,7 +251,6 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
                         <p className="text-[11px] text-slate-500 leading-snug mt-0.5">{n.description}</p>
                         <span className="text-[10px] font-mono text-slate-600 mt-1 block">{n.timestamp}</span>
                       </div>
-                      {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1 shrink-0 ml-auto" />}
                     </div>
                   );
                 })}
@@ -215,30 +261,39 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
 
         {/* Profile */}
         <div className="relative" ref={profileRef}>
-          <button onClick={() => setProfileOpen((prev) => !prev)} className="block">
+          <button onClick={() => setProfileOpen((prev) => !prev)} className="block" aria-label="Profile menu">
             <UserCircle2 className="w-8 h-8 text-slate-500 hover:text-slate-300 transition-colors" />
           </button>
 
           {profileOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-64 bg-[#0B0F14] border border-white/10 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
               <div className="px-4 py-4 border-b border-white/10">
                 <p className="text-sm font-semibold text-white">{currentUser.name}</p>
                 <p className="text-[11px] text-amber-400 font-mono mt-0.5">{currentUser.role}</p>
                 <p className="text-[11px] text-slate-500 mt-1 truncate">{currentUser.email}</p>
               </div>
               <div className="p-1.5">
-                {[
-                  { label: 'Profile', icon: User },
-                  { label: 'Settings', icon: Settings },
-                  { label: 'Help', icon: HelpCircle },
-                ].map(({ label, icon: Icon }) => (
-                  <button
-                    key={label}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
-                  >
-                    <Icon className="w-4 h-4" /> {label}
-                  </button>
-                ))}
+                <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">
+                  <User className="w-4 h-4" /> Profile
+                </button>
+                <button
+                  onClick={() => {
+                    setInfoModal('settings');
+                    setProfileOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                >
+                  <Settings className="w-4 h-4" /> Settings
+                </button>
+                <button
+                  onClick={() => {
+                    setInfoModal('help');
+                    setProfileOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+                >
+                  <HelpCircle className="w-4 h-4" /> Help
+                </button>
                 <div className="my-1 border-t border-white/10" />
                 <button className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-400/10 transition-colors">
                   <LogOut className="w-4 h-4" /> Logout
@@ -248,6 +303,14 @@ export default function Topbar({ onToggleSidebar, title }: TopbarProps) {
           )}
         </div>
       </div>
+
+      {infoModal && (
+        <InfoModal
+          title={infoModal === 'settings' ? 'Settings' : 'Help'}
+          message="This prototype focuses on investigation workflows. Account settings are outside the current frontend scope."
+          onClose={() => setInfoModal(null)}
+        />
+      )}
     </header>
   );
 }
